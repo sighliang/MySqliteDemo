@@ -1,10 +1,10 @@
-let prefix="/uploadPackage"
+let prefix="/deviceInfo"
 $(function() {
     load();
 });
 
 function load() {
-    $('#exampleTable')
+    $('#deviceTable')
         .bootstrapTable(
             {
                 method : 'get', // 服务器数据的请求方式 get or post
@@ -30,16 +30,12 @@ function load() {
                 // "server"
                 queryParams : function(params) {
                     let devId=$('#devId').val();
-                    let packageName=$('#packageName').val();
                     let param={
                         size:params.limit,
                         current:params.offset/params.limit+1
                     }
                     if(devId !='' && devId !=null){
                         param.devId=devId
-                    }
-                    if(packageName !='' && packageName !=null){
-                        param.packageName=packageName
                     }
                     return param;
                 },
@@ -65,83 +61,79 @@ function load() {
                         title : '序号' // 列标题
                     },
                     {
-                        field : 'status',
-                        title : '类型',
-                        align : 'center',
-                        formatter : function(value, row, index) {
-                            if (value == 0) {
-                                return '<span class="label label-danger">全量包</span>';
-                            } else if (value == 1) {
-                                return '<span class="label label-primary">单量包</span>';
-                            }
-                        }
-                    },
-                    {
-                        field : 'packageName',
-                        title : '日志包名'
-                    },
-                    {
-                        field : 'version',
-                        title : '版本号'
-                    },
-                    {
-                        field : 'url',
-                        title : '下载地址'
-                    },{
-                        field : 'uploadTime',
-                        title : '上传时间'
-                    },{
                         field : 'devId',
-                        title : '所属设备'
+                        title : '设备编号'
                     },
                     {
-                        title : '操作',
-                        field : 'id',
-                        align : 'center',
-                        formatter : function(value, row, index) {
-                            var d = '<a class="btn btn-warning btn-sm " href="#" title="删除"  mce_href="#" onclick="remove(\''
-                                + row.id
-                                + '\')"><i class="fa fa-remove"></i></a> ';
-                            var f = '<a class="btn btn-success btn-sm " href='
-                                + row.url
-                                + '  title="下载" ><i class="fa fa-download"></i></a> ';
-                            return  d + f;
-                        }
-                    } ]
+                        field : 'branchId',
+                        title : '网点编号'
+                    },{
+                        field : 'branchName',
+                        title : '网点编号名'
+                    },{
+                        field : ' ip',
+                        title : '设备ip'
+                    },{
+                        field : 'visitTime',
+                        title : '最后一次访问时间'
+                    },{
+                        field : 'createTime',
+                        title : '注册时间'
+                    }
+                    ]
             });
 }
+
 function reLoad() {
-    $('#exampleTable').bootstrapTable('refresh');
-}
-function add() {
-    layer.open({
-        type : 2,
-        title : '编辑',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '100%', '100%' ],
-        content : prefix + '/add'
-    });
+    $('#deviceTable').bootstrapTable('refresh');
 }
 
-function remove(id) {
-    layer.confirm('确定要删除选中的记录？', {
+function upload() {
+    var rows = $('#deviceTable').bootstrapTable('getSelections'); // 返回所有选择的行，当没有选择的记录时，返回一个空数组
+    let isAll =$('#isAll').val();
+    let file = document.getElementById("file").files[0]; // js 获取文件对象
+    let version =$('#version').val();
+    if(isAll==0){
+        if (rows.length == 0) {
+            layer.msg("请选择需要单量更新的设备（可多选）");
+            return;
+        }
+    }
+    if(file==null){
+        layer.msg("请选择需要上传的文件");
+        return;
+    }
+    layer.confirm("确认要为选中的'" + rows.length + "'个设备上传更新包吗?", {
         btn : [ '确定', '取消' ]
+        // 按钮
     }, function() {
+        var devIds = new Array();
+        // 遍历所有选择的行数据，取每条数据对应的ID
+        $.each(rows, function(i, row) {
+            devIds[i] = row['devId'];
+        });
+        let formData = new FormData();
+        formData.append("isAll",isAll);
+        formData.append("file",file);
+        formData.append("devIds",devIds);
+        formData.append("version",version);
         $.ajax({
-            url : prefix,
-            type : "delete",
-            data : {
-                'id' : id
-            },
+            type : 'post',
+            dataType: "json",
+            data : formData,
+            url :  '/uploadPackage',
+            processData: false,//不去处理发送的数据
+            contentType: false,//不去设置Content-Type请求头
             success : function(r) {
-                if (r.code==0) {
+                if (r.code == 0) {
                     layer.msg(r.msg);
                     reLoad();
-                }else{
+                } else {
                     layer.msg(r.msg);
                 }
             }
         });
-    })
+    }, function() {
+
+    });
 }

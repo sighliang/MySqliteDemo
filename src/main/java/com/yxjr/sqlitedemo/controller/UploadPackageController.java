@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
  * @author makejava
  * @since 2022-05-09 11:04:16
  */
-@RestController
+@Controller
 @RequestMapping("uploadPackage")
 public class UploadPackageController extends ApiController {
 
@@ -44,6 +45,16 @@ public class UploadPackageController extends ApiController {
     @Resource
     private UploadPackageService uploadPackageService;
 
+
+    /**
+     * 添加
+     * @return
+     */
+    @RequestMapping("/add")
+    public String add(){
+        return "UploadPackage/add";
+    }
+
     /**
      * 分页查询所有数据
      *
@@ -52,6 +63,7 @@ public class UploadPackageController extends ApiController {
      * @return 所有数据
      */
     @GetMapping
+    @ResponseBody
     public R selectAll(Page<UploadPackage> page, UploadPackage uploadPackage) {
         return success(this.uploadPackageService.page(page, new QueryWrapper<>(uploadPackage)));
     }
@@ -63,6 +75,7 @@ public class UploadPackageController extends ApiController {
      * @return 单条数据
      */
     @GetMapping("{id}")
+    @ResponseBody
     public R selectOne(@PathVariable Serializable id) {
         return success(this.uploadPackageService.getById(id));
     }
@@ -130,6 +143,7 @@ public class UploadPackageController extends ApiController {
      * @return 修改结果
      */
     @PutMapping
+    @ResponseBody
     public R update(@RequestBody UploadPackage uploadPackage) {
         return success(this.uploadPackageService.updateById(uploadPackage));
     }
@@ -141,6 +155,7 @@ public class UploadPackageController extends ApiController {
      * @return 删除结果
      */
     @DeleteMapping
+    @ResponseBody
     public R deleteById(int id) {
         return success(this.uploadPackageService.removeById(id));
     }
