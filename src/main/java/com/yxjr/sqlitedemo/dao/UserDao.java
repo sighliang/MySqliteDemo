@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserDao extends BaseMapper<User> {
    User login(@Param("userName")String userName,@Param("password") String password);
+   String getUserName(String userName);
    String getRole(String userName);
 }
 

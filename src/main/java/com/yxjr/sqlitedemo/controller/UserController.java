@@ -98,6 +98,9 @@ public class UserController extends ApiController {
     @PutMapping
     @ResponseBody
     public R update(User user) {
+        if("admin".equals(user.getUserName())){
+            return R.failed("admin用户不允许修改密码");
+        }
         return success(this.userService.updateById(user));
     }
 
@@ -110,6 +113,9 @@ public class UserController extends ApiController {
     @DeleteMapping
     @ResponseBody
     public R deleteById(int id) {
+        if(id == 1){
+            return R.failed("admin用户不允许删除");
+        }
         return success(this.userService.removeById(id));
     }
 }

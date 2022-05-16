@@ -30,6 +30,13 @@
             user_name=#{userName}
             limit 1
     </select>
+    <select id="getUserName" resultType="java.lang.String">
+        select user_name
+        from user
+        where
+            user_name=#{userName}
+            limit 1
+    </select>
 
     <!--    &lt;!&ndash;查询单个&ndash;&gt;-->
 <!--    <select id="queryById" resultMap="UserMap">-->

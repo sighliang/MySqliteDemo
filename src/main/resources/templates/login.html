@@ -67,7 +67,7 @@
     </style>
 </head>
 
-<body class="signin">
+<body class="signin"  onkeydown="keyLogin()">
 <div id="login_box">
     <h2>LOGIN</h2>
     <div id="input_box">
@@ -76,41 +76,44 @@
     <div class="input_box">
         <input type="password"  id="password" name="password" placeholder="请输入密码">
     </div>
-    <button onclick="login()">登录</button><br>
+    <button id="loginBtn" onclick="login()">登录</button><br>
 </div>
-<script th:src="@{/js/jquery.min.js}"></script>
-<script th:src="@{/js/bootstrap.min.js}"></script>
-<script src="/js/plugins/layer/layer.min.js" th:src="@{/js/plugins/layer/layer.min.js}"></script>
-<script>
-    function login(){
-        let userName=document.getElementById("userName").value;
-        let password=document.getElementById("password").value;
-        if(userName == "" || userName == null){
-            alert("用户名未输");
-            return;
-        }
-        let formData = new FormData();
-        formData.append("userName",userName);
-        formData.append("password",password);
-        formData.append("rememberMe",1);
-        $.ajax({
-            url:"/login",
-            dataType: "json",
-            type: "post",
-            data: formData,
-            processData: false,//不去处理发送的数据
-            contentType: false,//不去设置Content-Type请求头
-            success: function (res) {
-                if(res.code>0){
-                    console.log(res)
-                }
-                parent.location.href = 'index';
-            },
-            error: function (res) {
-                layer.msg(res.msg);
-            }
-        })
-    }
-</script>
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/login.js"></script>
+<!--<script>-->
+<!--    function login(){-->
+<!--        let userName=document.getElementById("userName").value;-->
+<!--        let password=document.getElementById("password").value;-->
+<!--        if(userName == "" || userName == null){-->
+<!--            alert("用户名未输");-->
+<!--            return;-->
+<!--        }-->
+<!--        if(userName == "" || userName == null){-->
+<!--            alert("用户名未输");-->
+<!--            return;-->
+<!--        }-->
+<!--        let formData = new FormData();-->
+<!--        formData.append("userName",userName);-->
+<!--        formData.append("password",password);-->
+<!--        formData.append("rememberMe",1);-->
+<!--        $.ajax({-->
+<!--            url:"/login",-->
+<!--            dataType: "json",-->
+<!--            type: "post",-->
+<!--            data: formData,-->
+<!--            processData: false,//不去处理发送的数据-->
+<!--            contentType: false,//不去设置Content-Type请求头-->
+<!--            success: function (res) {-->
+<!--                if(res.code>0){-->
+<!--                    console.log(res)-->
+<!--                }-->
+<!--                parent.location.href = 'index';-->
+<!--            },-->
+<!--            error: function (res) {-->
+<!--                layer.msg(res.msg);-->
+<!--            }-->
+<!--        })-->
+<!--    }-->
+<!--</script>-->
 </body>
 </html>

@@ -53,9 +53,17 @@ public class UserRealm extends AuthorizingRealm {
         {
             password = new String(token.getPassword());
         }
-        User user = null;
+        User user;
         try {
-            user = userDao.login(userName, password);
+            if(userDao.getUserName(userName)!=null){
+                user = userDao.login(userName, password);
+                if(user==null){
+                    log.info("对用户[" + userName + "]进行登录验证..密码验证未通过{}");
+                    throw  new IncorrectCredentialsException();
+                }
+            }else{
+               return null;
+            }
         }
         catch (Exception e)
         {

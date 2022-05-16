@@ -44,6 +44,8 @@ public class LoginController{
             return R.failed("用户名不存在");
         }catch (IncorrectCredentialsException e){ //密码错误就会进入这里
             return R.failed("密码错误");
+        }catch (Exception e){
+            return R.failed("账户密码验证出错");
         }
 
     }
