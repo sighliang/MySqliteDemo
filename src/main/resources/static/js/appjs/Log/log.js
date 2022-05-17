@@ -109,6 +109,17 @@ function reLoad() {
     $('#exampleTable').bootstrapTable('refresh');
 }
 
+function add() {
+    layer.open({
+        type : 2,
+        title : '提取日志',
+        maxmin : true,
+        shadeClose : false, // 点击遮罩关闭层
+        area : [ '100%', '100%' ],
+        content : prefix + '/add'
+    });
+}
+
 function remove(id) {
     layer.confirm('确定要删除选中的记录？', {
         btn : [ '确定', '取消' ]

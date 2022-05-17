@@ -36,6 +36,7 @@ public class LogPackageServiceImpl extends ServiceImpl<LogPackageDao, LogPackage
     @Override
     public boolean saveInfo(String logName, String devId) {
         try {
+            logger.info("保存上传的日志包数据");
             LogPackage logPackage = new LogPackage();
             logPackage.setLogName(logName);
             logPackage.setUploadTime(new Date());

@@ -127,7 +127,7 @@ function reLoad() {
 function add() {
     layer.open({
         type : 2,
-        title : '编辑',
+        title : '上次更新包',
         maxmin : true,
         shadeClose : false, // 点击遮罩关闭层
         area : [ '100%', '100%' ],

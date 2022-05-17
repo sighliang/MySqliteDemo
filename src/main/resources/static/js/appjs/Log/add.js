@@ -4,7 +4,7 @@ $(function() {
 });
 
 function load() {
-    $('#exampleTable')
+    $('#deviceTable')
         .bootstrapTable(
             {
                 method : 'get', // 服务器数据的请求方式 get or post
@@ -19,7 +19,7 @@ function load() {
                 pagination : true, // 设置为true会在底部显示分页条
                 // queryParamsType : "limit",
                 // //设置为limit则会发送符合RESTFull格式的参数
-                singleSelect : false, // 设置为true将禁止多选
+                singleSelect : true, // 设置为true将禁止多选
                 // contentType : "application/x-www-form-urlencoded",
                 // //发送到服务器的数据编码类型
                 pageSize : 10, // 如果设置了分页，每页数据条数
@@ -79,89 +79,52 @@ function load() {
                     },{
                         field : 'createTime',
                         title : '注册时间'
-                    },
-                    {
-                        title : '操作',
-                        field : 'id',
-                        align : 'center',
-                        formatter : function(value, row, index) {
-                            var e = '<a class="btn btn-primary btn-sm " href="#" mce_href="#" title="编辑" onclick="edit(\''
-                                + row.id
-                                + '\')"><i class="fa fa-edit"></i></a> ';
-                            var d = '<a class="btn btn-warning btn-sm " href="#" title="删除"  mce_href="#" onclick="remove(\''
-                                + row.id
-                                + '\')"><i class="fa fa-remove"></i></a> ';
-                            return e + d ;
-                        }
-                    } ],
-                exportDataType:'all',//'basic':当前页的数据, 'all':全部的数据, 'selected':选中的数据
-                showExport: true,  //是否显示导出按钮
-                buttonsAlign:"left",  //按钮位置
-                exportTypes:['excel'],//导出文件类型，[ 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf']
-                exportOptions:{
-                    ignoreColumn: [0,8],            //忽略某一列的索引
-                    fileName: '更新包表',              //文件名称设置
-                    worksheetName: 'Sheet1',          //表格工作区名称
-                    tableName: '更新包表',
-                    excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
-                }
+                    }
+                    ]
             });
 }
 
 function reLoad() {
-    $('#exampleTable').bootstrapTable('refresh');
+    $('#deviceTable').bootstrapTable('refresh');
 }
 
-function add() {
-    layer.open({
-        type : 2,
-        title : '增加',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '800px', '520px' ],
-        content : prefix + '/add' // iframe的url
-    });
-}
-function edit(id) {
-    layer.open({
-        type : 2,
-        title : '编辑',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '800px', '520px' ],
-        content : prefix + '/edit/' + id // iframe的url
-    });
-}
-
-function uploadPackage() {
-    layer.open({
-        type : 2,
-        title : '编辑',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '100%', '100%' ],
-        content : prefix + '/upload'
-    });
-}
-
-function remove(id) {
-    layer.confirm('确定要删除选中的记录？', {
+function upload() {
+    let rows = $('#deviceTable').bootstrapTable('getSelections'); // 返回所选择的行，当没有选择的记录时，返回一个空数组
+    let datetime =$('#datetime').val();
+    if(rows==""){
+        layer.msg("请选择需要提取的设备");
+        return;
+    }
+    if(datetime==null || datetime==""){
+        layer.msg("请选择需要提取的时间");
+        return;
+    }
+    let row=rows[0];
+    layer.confirm("确认要提取的设备号为‘" + row.devId + "'的日志吗吗?", {
         btn : [ '确定', '取消' ]
+        // 按钮
     }, function() {
+        let formData = new FormData();
+        formData.append("devId",row.devId);
+        formData.append("ip",row.ip);
+        formData.append("datetime",datetime)
         $.ajax({
-            url : prefix,
-            type : "delete",
-            data : {
-                'id' : id
-            },
+            type : 'post',
+            dataType: "json",
+            data :formData,
+            url :  '/logPackage/getLog',
+            processData: false,//不去处理发送的数据
+            contentType: false,//不去设置Content-Type请求头
             success : function(r) {
-                if (r.code==0) {
-                    layer.msg(r.msg);
-                    reLoad();
-                }else{
+                if (r.code == 0) {
+                    layer.msg("日志提取成功");
+                    window.location.href=r.data;
+                } else {
                     layer.msg(r.msg);
                 }
             }
         });
-    })
+    }, function() {
+
+    });
 }

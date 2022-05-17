@@ -71,7 +71,7 @@ function load() {
                         field : 'branchName',
                         title : '网点编号名'
                     },{
-                        field : ' ip',
+                        field : 'ip',
                         title : '设备ip'
                     },{
                         field : 'visitTime',

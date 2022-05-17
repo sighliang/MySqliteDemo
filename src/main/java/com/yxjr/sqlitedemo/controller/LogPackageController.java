@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -22,6 +23,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 
 /**
  * (LogPackage)表控制层
@@ -29,7 +32,7 @@ import java.io.File;
  * @author makejava
  * @since 2022-05-09 11:03:24
  */
-@RestController
+@Controller
 @RequestMapping("logPackage")
 public class LogPackageController extends ApiController {
 
@@ -45,6 +48,15 @@ public class LogPackageController extends ApiController {
     private LogPackageService logPackageService;
 
     /**
+     * 添加
+     * @return
+     */
+    @RequestMapping("/add")
+    public String add(){
+        return "Log/add";
+    }
+
+    /**
      * 分页查询所有数据
      *
      * @param page       分页对象
@@ -52,6 +64,7 @@ public class LogPackageController extends ApiController {
      * @return 所有数据
      */
     @GetMapping
+    @ResponseBody
     public R selectAll(Page<LogPackage> page, LogPackage logPackage) {
         return success(this.logPackageService.page(page, new QueryWrapper<>(logPackage)));
     }
@@ -63,6 +76,7 @@ public class LogPackageController extends ApiController {
      * @return 单条数据
      */
     @GetMapping("{devId}")
+    @ResponseBody
     public R selectDev( @PathVariable(name = "devId")String devId) {
         return success(logPackageService.queryByDevId(devId));
     }
@@ -117,6 +131,7 @@ public class LogPackageController extends ApiController {
      * @return 修改结果
      */
     @PutMapping
+    @ResponseBody
     public R update(@RequestBody LogPackage logPackage) {
         return success(this.logPackageService.updateById(logPackage));
     }
@@ -128,28 +143,33 @@ public class LogPackageController extends ApiController {
      * @return 删除结果
      */
     @DeleteMapping
+    @ResponseBody
     public R delete(@RequestParam("id") Integer id) {
         return success(this.logPackageService.removeById(id));
     }
 
     @PostMapping("/getLog")
+    @ResponseBody
     public R getLog(HttpServletRequest request,
                     HttpServletResponse response,@RequestParam("devId")String devId,@RequestParam("ip")String ip,@RequestParam("datetime") String dateTime){
         try {
+            logger.info("用户开始提取日志");
             String url="http://"+ip+":8900/getFiles";
             HttpClienUtil httpClienUtil=new HttpClienUtil();
             JSONObject json=new JSONObject();
             json.put("devId",devId);
             json.put("datetime",dateTime);
-            String ret= httpClienUtil.jsonPost(url,json);
+            String ret= httpClienUtil.httpPostWithJSON(url,json);
+            if("".equals(ret)){
+                logger.info("日志提取失败，访问机器失败");
+                return R.failed("提取文件失败");
+            }
             JSONObject retJson = JSONObject.fromObject(ret);
             if("OK".equals(retJson.get("retCode"))){
                 String fileName=retJson.get("fileName").toString();
-                CommonController commonController =new CommonController();
-                String rec= commonController.downloadLogFile(request, response,devId,fileName);
-                if(rec==null){
-                    return success("提取日志成功");
-                }
+                InetAddress ip4 = Inet4Address.getLocalHost();
+                String download="http://"+ip4.getHostAddress()+":"+uploadConfig.getPort()+"/common/downloadLog/"+devId+"/"+fileName;
+                return success(download);
             }
             return R.failed("提取日志失败");
         }catch (Exception e){

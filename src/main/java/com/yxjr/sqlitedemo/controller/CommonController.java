@@ -174,6 +174,7 @@ public class CommonController extends ApiController {
      */
     @GetMapping("/queryVersion")
     public JSONObject queryVersion(String devId){
+        logger.info("设备获取版本号");
         return uploadPackageService.queryVersion(devId);
     }
     /**
@@ -186,13 +187,14 @@ public class CommonController extends ApiController {
     @ResponseBody
     public R uploadLog(MultipartHttpServletRequest request) {
         try {
-            String devId=request.getParameter("devId");
+            logger.info("设备开始上传日志包");
+             String devId=request.getParameter("devId");
             if(devId == null || devId == ""){
                 return failed("未获取到设备编号");
             }
             MultipartFile file=request.getFile("file");
             String packPath = uploadConfig.getLogPath()+devId;
-            String fileName=file.getOriginalFilename();//文件名
+           String fileName=file.getOriginalFilename();//文件名
             String pathString = null;
             if(file!=null){
                 pathString = packPath+"/" + fileName;//new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" +
@@ -212,6 +214,7 @@ public class CommonController extends ApiController {
                 files.getParentFile().mkdirs();
             }
             FileUtils.copyInputStreamToFile(file.getInputStream(), files);
+            logger.info("设备日志上传成功");
             return success(logPackageService.saveInfo(fileName,devId));
         }catch (Exception e){
             logger.error("上传日志压缩包出现异常"+e);
@@ -228,6 +231,7 @@ public class CommonController extends ApiController {
      */
     @PostMapping("/taskInfo")
     public R insert(@RequestBody TaskInfoVO taskInfoVO) {
+        logger.info("设备提交本地任务列表");
         return success(taskInfoService.saveTaskInfo(taskInfoVO));
     }
 
