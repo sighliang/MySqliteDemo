@@ -80,40 +80,5 @@
 </div>
 <div th:include="include :: footer"></div>
 <script type="text/javascript" src="/js/appjs/login.js"></script>
-<!--<script>-->
-<!--    function login(){-->
-<!--        let userName=document.getElementById("userName").value;-->
-<!--        let password=document.getElementById("password").value;-->
-<!--        if(userName == "" || userName == null){-->
-<!--            alert("用户名未输");-->
-<!--            return;-->
-<!--        }-->
-<!--        if(userName == "" || userName == null){-->
-<!--            alert("用户名未输");-->
-<!--            return;-->
-<!--        }-->
-<!--        let formData = new FormData();-->
-<!--        formData.append("userName",userName);-->
-<!--        formData.append("password",password);-->
-<!--        formData.append("rememberMe",1);-->
-<!--        $.ajax({-->
-<!--            url:"/login",-->
-<!--            dataType: "json",-->
-<!--            type: "post",-->
-<!--            data: formData,-->
-<!--            processData: false,//不去处理发送的数据-->
-<!--            contentType: false,//不去设置Content-Type请求头-->
-<!--            success: function (res) {-->
-<!--                if(res.code>0){-->
-<!--                    console.log(res)-->
-<!--                }-->
-<!--                parent.location.href = 'index';-->
-<!--            },-->
-<!--            error: function (res) {-->
-<!--                layer.msg(res.msg);-->
-<!--            }-->
-<!--        })-->
-<!--    }-->
-<!--</script>-->
 </body>
 </html>

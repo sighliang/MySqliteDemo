@@ -81,7 +81,18 @@ function load() {
                                 + '\')"><i class="fa fa-remove"></i></a> ';
                             return e + d ;
                         }
-                    } ]
+                    } ],
+                    exportDataType:'all',//'basic':当前页的数据, 'all':全部的数据, 'selected':选中的数据
+                    showExport: true,  //是否显示导出按钮
+                    buttonsAlign:"left",  //按钮位置
+                    exportTypes:['excel'],//导出文件类型，[ 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf']
+                    exportOptions:{
+                        ignoreColumn: [0,4],            //忽略某一列的索引
+                        fileName: '用户信息表',              //文件名称设置
+                        worksheetName: 'Sheet1',          //表格工作区名称
+                        tableName: '用户信息表',
+                        excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+                    }
             });
 }
 

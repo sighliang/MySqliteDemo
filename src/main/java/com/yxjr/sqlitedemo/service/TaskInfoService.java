@@ -1,6 +1,7 @@
 package com.yxjr.sqlitedemo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yxjr.sqlitedemo.entity.SelectVo;
 import com.yxjr.sqlitedemo.entity.TaskInfo;
 import com.yxjr.sqlitedemo.entity.TaskInfoVO;
 
@@ -12,5 +13,7 @@ import com.yxjr.sqlitedemo.entity.TaskInfoVO;
  */
 public interface TaskInfoService extends IService<TaskInfo> {
     boolean saveTaskInfo(TaskInfoVO taskInfoVO);
+
+    int count(SelectVo selectVo);
 }
 

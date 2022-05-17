@@ -215,7 +215,7 @@ public class CommonController extends ApiController {
             return success(logPackageService.saveInfo(fileName,devId));
         }catch (Exception e){
             logger.error("上传日志压缩包出现异常"+e);
-            return failed("运行出现异常，异常原因为：["+e+"]");
+            return R.failed("运行出现异常，异常原因为：["+e+"]");
         }
     }
 

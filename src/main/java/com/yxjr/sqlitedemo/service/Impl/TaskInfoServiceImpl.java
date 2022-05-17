@@ -3,6 +3,7 @@ package com.yxjr.sqlitedemo.service.Impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yxjr.sqlitedemo.dao.TaskInfoDao;
 import com.yxjr.sqlitedemo.entity.DeviceInfo;
+import com.yxjr.sqlitedemo.entity.SelectVo;
 import com.yxjr.sqlitedemo.entity.TaskInfo;
 import com.yxjr.sqlitedemo.entity.TaskInfoVO;
 import com.yxjr.sqlitedemo.service.DeviceInfoService;
@@ -25,6 +26,9 @@ public class TaskInfoServiceImpl extends ServiceImpl<TaskInfoDao, TaskInfo> impl
     @Autowired
     DeviceInfoService deviceInfoService;
 
+    @Autowired
+    TaskInfoDao taskInfoDao;
+
     @Override
     public boolean saveTaskInfo(TaskInfoVO taskInfoVO) {
         try{
@@ -43,7 +47,7 @@ public class TaskInfoServiceImpl extends ServiceImpl<TaskInfoDao, TaskInfo> impl
            }else {
                Date lastVisitTime=deviceInfo.getVisitTime();
                Date nowTime=new Date();
-               if(nowTime.getYear() == lastVisitTime.getYear() && nowTime.getMonth()==lastVisitTime.getMonth() && nowTime.getDay()==lastVisitTime.getDay()){
+               if(nowTime.getTime()-lastVisitTime.getTime()<24*60*60*1000){
                    return false;
                }
                deviceInfo.setVisitTime(new Date());
@@ -61,6 +65,11 @@ public class TaskInfoServiceImpl extends ServiceImpl<TaskInfoDao, TaskInfo> impl
           System.out.println("错误原因为："+e);
             return false;
         }
+    }
+
+    @Override
+    public int count(SelectVo selectVo) {
+        return taskInfoDao.count(selectVo);
     }
 }
 

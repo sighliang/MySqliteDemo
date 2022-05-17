@@ -82,8 +82,14 @@
         </where>
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
+    <select id="count" resultType="java.lang.Integer">
+        select COALESCE(sum(task_num),0)
+        from task_info
+        where dev_id=#{devId}
+        and create_time between #{beginTime} and #{endTime}
+    </select>
 
-<!--    &lt;!&ndash;统计总行数&ndash;&gt;-->
+    <!--    &lt;!&ndash;统计总行数&ndash;&gt;-->
 <!--    <select id="count" resultType="java.lang.Long">-->
 <!--        select count(1)-->
 <!--        from task_info-->

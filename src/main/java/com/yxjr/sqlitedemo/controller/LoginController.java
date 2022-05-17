@@ -74,9 +74,14 @@ public class LoginController{
     public String uPackage(){
         return "UploadPackage/uploadPackage";
     }
+    @RequestMapping("/task")
+    public String task(){
+        return "Task/task";
+    }
     @RequestMapping("/main")
     public String main(){
         return "main";
     }
+
 
 }

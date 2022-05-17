@@ -1,4 +1,4 @@
-let prefix="/deviceInfo"
+let prefix="/taskInfo"
 $(function() {
     load();
 });
@@ -30,6 +30,7 @@ function load() {
                 // "server"
                 queryParams : function(params) {
                     let devId=$('#devId').val();
+                    let logName=$('#logName').val();
                     let param={
                         size:params.limit,
                         current:params.offset/params.limit+1
@@ -65,36 +66,21 @@ function load() {
                         title : '设备编号'
                     },
                     {
-                        field : 'branchId',
-                        title : '网点编号'
-                    },{
-                        field : 'branchName',
-                        title : '网点编号名'
-                    },{
-                        field : ' ip',
-                        title : '设备ip'
-                    },{
-                        field : 'visitTime',
-                        title : '最后一次访问时间'
+                        field : 'taskNum',
+                        title : '任务数'
                     },{
                         field : 'createTime',
-                        title : '注册时间'
+                        title : '产生时间'
                     },
                     {
                         title : '操作',
                         field : 'id',
                         align : 'center',
                         formatter : function(value, row, index) {
-                            var e = '<a class="btn btn-primary btn-sm " href="#" mce_href="#" title="编辑" onclick="edit(\''
-                                + row.id
-                                + '\')"><i class="fa fa-edit"></i></a> ';
-                            var d = '<a class="btn btn-warning btn-sm " href="#" title="删除"  mce_href="#" onclick="remove(\''
-                                + row.id
-                                + '\')"><i class="fa fa-remove"></i></a> ';
-                            var f = '<a class="btn btn-success btn-sm " href="#" title="提取日志"   onclick="resetPwd(\''
-                                + row.id
-                                + '\')"><i class="fa fa-download"></i></a> ';
-                            return e + d + f;
+                            // var d = '<a class="btn btn-warning btn-sm " href="#" title="删除"  mce_href="#" onclick="remove(\''
+                            //     + row.id
+                            //     + '\')"><i class="fa fa-remove"></i></a> ';
+                            // return  d + f;
                         }
                     } ],
                 exportDataType:'all',//'basic':当前页的数据, 'all':全部的数据, 'selected':选中的数据
@@ -102,7 +88,7 @@ function load() {
                 buttonsAlign:"left",  //按钮位置
                 exportTypes:['excel'],//导出文件类型，[ 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf']
                 exportOptions:{
-                    ignoreColumn: [0,8],            //忽略某一列的索引
+                    ignoreColumn: [0,5],            //忽略某一列的索引
                     fileName: '更新包表',              //文件名称设置
                     worksheetName: 'Sheet1',          //表格工作区名称
                     tableName: '更新包表',
@@ -110,42 +96,11 @@ function load() {
                 }
             });
 }
-
 function reLoad() {
     $('#exampleTable').bootstrapTable('refresh');
 }
 
-function add() {
-    layer.open({
-        type : 2,
-        title : '增加',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '800px', '520px' ],
-        content : prefix + '/add' // iframe的url
-    });
-}
-function edit(id) {
-    layer.open({
-        type : 2,
-        title : '编辑',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '800px', '520px' ],
-        content : prefix + '/edit/' + id // iframe的url
-    });
-}
 
-function uploadPackage() {
-    layer.open({
-        type : 2,
-        title : '编辑',
-        maxmin : true,
-        shadeClose : false, // 点击遮罩关闭层
-        area : [ '100%', '100%' ],
-        content : prefix + '/upload'
-    });
-}
 
 function remove(id) {
     layer.confirm('确定要删除选中的记录？', {
@@ -167,4 +122,53 @@ function remove(id) {
             }
         });
     })
+}
+
+function Count() {
+    let beginTime=$("#beginTime").val();
+    let endTime=$("#endTime").val();
+    let devId=$("#devId").val();
+    if(beginTime == null || beginTime == ""){
+        layer.msg("请选择统计的开始时间");
+        return;
+    }
+    if(endTime == null || endTime == ""){
+        layer.msg("请选择统计的结束时间");
+        return;
+    }
+
+    if(devId ==null || devId == ""){
+        layer.msg("请输入需要统计的的设备编号");
+        return;
+    }
+    if(beginTime.length>0 && endTime.length>0){
+        var startDateTemp = beginTime.split("-");
+        var endDateTemp = endTime.split("-");
+        var allStartDate = new Date(startDateTemp[0],startDateTemp[1],startDateTemp[2]);
+        var allEndDate = new Date(endDateTemp[0],endDateTemp[1],endDateTemp[2]);
+        if(allStartDate.getTime()>allEndDate.getTime()){
+            layer.msg("开始时间不能大于结束时间，请重新选择");
+            return;
+        }
+    }
+    $.ajax({
+        type : 'post',
+        dataType: "JSON",
+        data :JSON.stringify({
+            "beginTime":beginTime,
+            "endTime":endTime,
+            "devId":devId
+        }),
+        url :  prefix+'/count',
+        processData: false,//不去处理发送的数据
+        contentType: "application/json",//不去设置Content-Type请求头
+        success : function(r) {
+            if (r.code==0) {
+                layer.msg("统计成功,设备号["+devId+"]在["+beginTime+"]-["+endTime+"]共存在["+r.data+"]条任务");
+                reLoad();
+            }else{
+                layer.msg(r.msg);
+            }
+        }
+    });
 }

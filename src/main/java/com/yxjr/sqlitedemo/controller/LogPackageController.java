@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yxjr.sqlitedemo.common.HttpClienUtil;
 import com.yxjr.sqlitedemo.common.UploadConfig;
 import com.yxjr.sqlitedemo.entity.LogPackage;
 import com.yxjr.sqlitedemo.service.LogPackageService;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
@@ -84,7 +88,7 @@ public class LogPackageController extends ApiController {
             if(file!=null){
                 pathString = packPath+"/" + fileName;//new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" +
             }else {
-                return failed("文件为空");
+                return R.failed("文件为空");
             }
             //包创建
             File pack=new File(packPath);
@@ -102,7 +106,7 @@ public class LogPackageController extends ApiController {
             return success(logPackageService.saveInfo(fileName,devId));
         }catch (Exception e){
             logger.error("上传日志压缩包出现异常"+e);
-            return failed("运行出现异常，异常原因为：["+e+"]");
+            return R.failed("运行出现异常，异常原因为：["+e+"]");
         }
     }
 
@@ -118,7 +122,7 @@ public class LogPackageController extends ApiController {
     }
 
     /**
-     * 删除数据
+     * 提取设备日志
      *
      * @param id 主键
      * @return 删除结果
@@ -126,6 +130,32 @@ public class LogPackageController extends ApiController {
     @DeleteMapping
     public R delete(@RequestParam("id") Integer id) {
         return success(this.logPackageService.removeById(id));
+    }
+
+    @PostMapping("/getLog")
+    public R getLog(HttpServletRequest request,
+                    HttpServletResponse response,@RequestParam("devId")String devId,@RequestParam("ip")String ip,@RequestParam("datetime") String dateTime){
+        try {
+            String url="http://"+ip+":8900/getFiles";
+            HttpClienUtil httpClienUtil=new HttpClienUtil();
+            JSONObject json=new JSONObject();
+            json.put("devId",devId);
+            json.put("datetime",dateTime);
+            String ret= httpClienUtil.jsonPost(url,json);
+            JSONObject retJson = JSONObject.fromObject(ret);
+            if("OK".equals(retJson.get("retCode"))){
+                String fileName=retJson.get("fileName").toString();
+                CommonController commonController =new CommonController();
+                String rec= commonController.downloadLogFile(request, response,devId,fileName);
+                if(rec==null){
+                    return success("提取日志成功");
+                }
+            }
+            return R.failed("提取日志失败");
+        }catch (Exception e){
+            logger.error("转发提取设备日志出现异常"+e);
+            return R.failed("转发提取设备日志出现异常"+e);
+        }
     }
 }
 

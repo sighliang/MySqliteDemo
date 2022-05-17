@@ -32,8 +32,8 @@ public class ShiroConfig {
         //拦截接口
         filterChainDefinitionMap.put("/user/**", "user");  //存在用户权限
         filterChainDefinitionMap.put("/deviceInfo/**", "user");
-        filterChainDefinitionMap.put("/logPackage/**", "user");
-        filterChainDefinitionMap.put("/taskInfo/**", "user");
+        filterChainDefinitionMap.put("/logPackage/**", "anon");
+        filterChainDefinitionMap.put("/taskInfo/**", "anon");
         filterChainDefinitionMap.put("/uploadPackage/**", "user");
         filterChainDefinitionMap.put("/log", "user");
         filterChainDefinitionMap.put("/device", "user");
@@ -41,6 +41,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/main", "user");
         filterChainDefinitionMap.put("/logout", "user");
         filterChainDefinitionMap.put("/uPackage", "user");
+        filterChainDefinitionMap.put("/task", "user");
         //开放接口
         filterChainDefinitionMap.put("/common/**","anon"); //开放权限
         filterChainDefinitionMap.put("/login", "anon");

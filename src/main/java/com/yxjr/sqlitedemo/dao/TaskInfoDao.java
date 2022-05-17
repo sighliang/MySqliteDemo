@@ -1,6 +1,7 @@
 package com.yxjr.sqlitedemo.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yxjr.sqlitedemo.entity.SelectVo;
 import com.yxjr.sqlitedemo.entity.TaskInfo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface TaskInfoDao extends BaseMapper<TaskInfo> {
-
+    int count(SelectVo selectVo);
 }
 

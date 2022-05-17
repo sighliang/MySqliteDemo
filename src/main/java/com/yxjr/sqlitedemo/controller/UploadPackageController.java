@@ -97,7 +97,7 @@ public class UploadPackageController extends ApiController {
             String[] devIds =devId.split(",");
             if(isAll !=0 && isAll !=1){
                 logger.error("传入参数错误，无法判断是否为全量或局部更新包:isAll=["+isAll+"]");
-                return failed("传入参数错误，无法判断是否为全量或局部更新包:isAll=["+isAll+"]");
+                return R.failed("传入参数错误，无法判断是否为全量或局部更新包:isAll=["+isAll+"]");
             }
             //匹配版本的文件格式
             String pattern = "[0-9]+\\.[0-9]+\\.[0-9]+";
@@ -105,7 +105,7 @@ public class UploadPackageController extends ApiController {
             Matcher m = r.matcher(version);
             if( !m.matches()){
                 logger.error("版本名的格式不对，版本：version：["+version+"]");
-                return failed("版本名的格式不对，版本：version：["+version+"]");
+                return R.failed("版本名的格式不对，版本：version：["+version+"]");
             }
 
             String packPath = uploadConfig.getUploadpacketPath();
@@ -114,7 +114,7 @@ public class UploadPackageController extends ApiController {
             if(file!=null){
                 pathString = packPath+"/" + fileName;//new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" +
             }else {
-                return failed("文件为空");
+                return R.failed("文件为空");
             }
             //包创建
             File pack=new File(packPath);
